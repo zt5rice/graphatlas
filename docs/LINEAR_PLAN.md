@@ -80,3 +80,24 @@ Source of truth for creating the Linear project, milestones, and issues. One tic
 - Issue keys (GA-XX) are placeholders; Linear will assign real numbers (e.g. `ZHA-42`), which
   replace `GA-XX` in branch/commit/PR prefixes.
 - After Linear creation, mirror any edits back into this file so the repo stays the source of truth.
+
+## Created identifiers (2026-08-20)
+
+- Project: `e376b45b-b619-48c2-80fc-486946a57261` (GraphAtlas — Multi-Engine GraphRAG Enterprise Knowledge Platform)
+- Team: ZHA (`f8e0f74b-c3f5-443c-ae81-c15fa9297623`)
+
+| GA-XX | Linear identifier | GA-XX | Linear identifier |
+|---|---|---|---|
+| GA-01 | ZHA-55 | GA-14 | ZHA-68 |
+| GA-02 | ZHA-56 | GA-15 | ZHA-69 |
+| GA-03 | ZHA-57 | GA-16 | ZHA-70 |
+| GA-04 | ZHA-58 | GA-17 | ZHA-71 |
+| GA-05 | ZHA-59 | GA-18 | ZHA-72 |
+| GA-06 | ZHA-60 | GA-19 | ZHA-73 |
+| GA-07 | ZHA-61 | GA-20 | ZHA-74 |
+| GA-08 | ZHA-62 | GA-21 | ZHA-75 |
+| GA-09 | ZHA-63 | GA-22 | ZHA-76 |
+| GA-10 | ZHA-64 | GA-23 | ZHA-77 |
+| GA-11 | ZHA-65 | GA-24 | ZHA-78 |
+| GA-12 | ZHA-66 | GA-25 | ZHA-79 |
+| GA-13 | ZHA-67 | | |
