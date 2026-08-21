@@ -14,6 +14,17 @@ def _require(name: str) -> str:
     return value
 
 
+def _agent_api_key() -> str:
+    """Prefer AGENT_API_KEY; fall back to the OpenCode Go gateway token."""
+    value = os.getenv("AGENT_API_KEY", "").strip()
+    if value:
+        return value
+    value = os.getenv("OPENCODE_CODEX_API_KEY", "").strip()
+    if value:
+        return value
+    raise RuntimeError("Missing AGENT_API_KEY (or OPENCODE_CODEX_API_KEY)")
+
+
 @dataclass(frozen=True)
 class Settings:
     database_url: str
@@ -36,7 +47,7 @@ def get_settings() -> Settings:
         ),
         agent_base_url=_require("AGENT_BASE_URL"),
         agent_model=_require("AGENT_MODEL"),
-        agent_api_key=_require("AGENT_API_KEY"),
+        agent_api_key=_agent_api_key(),
         embedding_base_url=_require("EMBEDDING_BASE_URL"),
         embedding_model=_require("EMBEDDING_MODEL"),
         embedding_dimensions=int(os.getenv("EMBEDDING_DIMENSIONS", "1536")),
