@@ -1,5 +1,5 @@
 import { getDb } from "../db";
-import type { CreateDocumentInput, DocumentRecord } from "@graphatlas/contracts";
+import type { CreateDocumentInput, DocumentRecord, DocumentStatus } from "@graphatlas/contracts";
 
 const SELECT = `
   id, title, kind, status, file_type AS "fileType", metadata,
@@ -33,4 +33,11 @@ export async function getDocument(id: string): Promise<DocumentRecord | undefine
     WHERE id = ${id}
   `;
   return rows[0];
+}
+
+export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<void> {
+  const sql = getDb();
+  await sql`
+    UPDATE graphatlas.documents SET status = ${status}, updated_at = now() WHERE id = ${id}
+  `;
 }
