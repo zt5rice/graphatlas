@@ -1,0 +1,5 @@
+customer,plan,stage,acv_usd,owner,risk
+Acme Corp,Enterprise,closed_won,120000,Jack Turner,low
+Globex,Enterprise,negotiation,80000,Jack Turner,medium
+Umbrella Health,Pilot,closed_won,25000,Robert Gray,low
+Initech,Professional,renewal_at_risk,30000,Jack Turner,high

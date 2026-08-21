@@ -1,0 +1,19 @@
+team,name,role,location,manager
+Executive,Ava Chen,CEO,San Francisco,
+Executive,Marcus Reid,CTO,San Francisco,Ava Chen
+Executive,Elena Vasquez,CFO,New York,Ava Chen
+Executive,Priya Sharma,COO,Chicago,Ava Chen
+Executive,Tom Okafor,CPO,San Francisco,Ava Chen
+Executive,Robert Gray,CRO,Boston,Ava Chen
+Engineering,Grace Liu,VP Engineering,San Francisco,Marcus Reid
+Platform,David Kim,Director Platform Engineering,Seattle,Grace Liu
+Search,Liam O'Brien,Engineering Manager,Seattle,David Kim
+Search,Ethan Brooks,Senior Software Engineer,Seattle,Liam O'Brien
+Search,Jordan Diaz,Software Engineer,Remote,Liam O'Brien
+Infrastructure,Nora Al-Sayed,Engineering Manager,New York,David Kim
+Infrastructure,Sam Osei,Site Reliability Engineer,Remote,Nora Al-Sayed
+Data,Sofia Rossi,Director Data Engineering,Boston,Grace Liu
+Data,Maya Patel,Data Engineer,Boston,Sofia Rossi
+Product,Oliver Wright,Senior Product Manager,San Francisco,Tom Okafor
+Product,Hannah Lee,Design Lead,San Francisco,Tom Okafor
+Revenue,Jack Turner,Enterprise Account Executive,Chicago,Robert Gray
