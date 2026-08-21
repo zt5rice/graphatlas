@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { app } from "../src/app";
-import { closeDb, getDb } from "@graphatlas/db";
+import { closeDb, getDb, migrate } from "@graphatlas/db";
 import { pipelineDeps, type ExtractorFn } from "../src/worker/ingest";
 
 const REPO_ROOT = resolve(import.meta.dir, "..", "..", "..");
@@ -89,7 +89,8 @@ async function waitForJob(
 }
 
 describe("documents & jobs API", () => {
-  beforeAll(() => {
+  beforeAll(async () => {
+    await migrate(); // idempotent; ensure schema exists on a fresh database (CI)
     pipelineDeps.extractor = fakeExtractor();
     pipelineDeps.embed = fakeEmbed();
   });
