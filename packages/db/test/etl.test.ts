@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { randomUUID } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -8,6 +9,9 @@ import { runEtl } from "../src/etl/run";
 import type { EmbedFn } from "../src/etl/run";
 
 const DIM = 1536;
+const RUN = randomUUID().slice(0, 8);
+const CHUNK_IDS = [`doc-${RUN}-000`, `doc-${RUN}-001`];
+const ENTITY_NAMES = ["TestOrg", "TestPerson"];
 let fixtureDir: string;
 let docId: string;
 
@@ -19,24 +23,24 @@ function writeStaging(dir: string) {
   writeFileSync(
     join(dir, "kv_store_text_chunks.json"),
     JSON.stringify({
-      "doc-fake-000": { content: "Aurora Dynamics builds search tools." },
-      "doc-fake-001": { content: "Ava Chen is the CEO of Aurora Dynamics." },
+      [CHUNK_IDS[0]!]: { content: "TestOrg builds widgets." },
+      [CHUNK_IDS[1]!]: { content: "TestPerson runs TestOrg." },
     }),
   );
   writeFileSync(
     join(dir, "vdb_entities.json"),
     JSON.stringify({
       data: [
-        { entity_name: "Aurora Dynamics", content: "Aurora Dynamics\nAurora Dynamics builds search tools." },
-        { entity_name: "Ava Chen", content: "Ava Chen\nAva Chen is the CEO of Aurora Dynamics." },
+        { entity_name: "TestOrg", content: "TestOrg\nTestOrg builds widgets." },
+        { entity_name: "TestPerson", content: "TestPerson\nTestPerson runs TestOrg." },
       ],
     }),
   );
   writeFileSync(
     join(dir, "kv_store_entity_chunks.json"),
     JSON.stringify({
-      "Aurora Dynamics": { chunk_ids: ["doc-fake-000"] },
-      "Ava Chen": { chunk_ids: ["doc-fake-001"] },
+      TestOrg: { chunk_ids: [CHUNK_IDS[0]!] },
+      TestPerson: { chunk_ids: [CHUNK_IDS[1]!] },
     }),
   );
   writeFileSync(
@@ -44,16 +48,16 @@ function writeStaging(dir: string) {
     JSON.stringify({
       data: [
         {
-          src_id: "Ava Chen",
-          tgt_id: "Aurora Dynamics",
-          content: "leads\tAva Chen\nAurora Dynamics\nAva Chen leads Aurora Dynamics.",
+          src_id: "TestPerson",
+          tgt_id: "TestOrg",
+          content: "runs\tTestPerson\nTestOrg\nTestPerson runs TestOrg.",
         },
       ],
     }),
   );
   writeFileSync(
     join(dir, "kv_store_relation_chunks.json"),
-    JSON.stringify({ "Ava Chen<SEP>Aurora Dynamics": { chunk_ids: ["doc-fake-000", "doc-fake-001"] } }),
+    JSON.stringify({ "TestPerson<SEP>TestOrg": { chunk_ids: CHUNK_IDS } }),
   );
 }
 
@@ -71,35 +75,35 @@ describe("ETL staging -> runtime", () => {
     expect(result.chunks).toBe(2);
     expect(result.entities).toBe(2);
     expect(result.relations).toBe(1);
-    expect(result.chunkIds.sort()).toEqual(["doc-fake-000", "doc-fake-001"]);
+    expect(result.chunkIds.sort()).toEqual([...CHUNK_IDS].sort());
 
     const sql = getDb();
     const rows = await sql<{ id: string }[]>`
       SELECT id FROM graphatlas.chunks WHERE document_id = ${docId} ORDER BY id
     `;
-    expect(rows.map((r) => r.id)).toEqual(["doc-fake-000", "doc-fake-001"]);
+    expect(rows.map((r) => r.id)).toEqual([...CHUNK_IDS].sort());
   });
 
   test("entities/relations carry parsed descriptions and chunk provenance", async () => {
     const sql = getDb();
     const [entity] = await sql<{ description: string; source_chunk_ids: string[] }[]>`
-      SELECT description, source_chunk_ids FROM graphatlas.entities WHERE id = 'Aurora Dynamics'
+      SELECT description, source_chunk_ids FROM graphatlas.entities WHERE id = 'TestOrg'
     `;
-    expect(entity.description).toBe("Aurora Dynamics builds search tools.");
-    expect(entity.source_chunk_ids).toEqual(["doc-fake-000"]);
+    expect(entity.description).toBe("TestOrg builds widgets.");
+    expect(entity.source_chunk_ids).toEqual([CHUNK_IDS[0]]);
 
     const [rel] = await sql<{ keywords: string; description: string; source_chunk_ids: string[] }[]>`
-      SELECT keywords, description, source_chunk_ids FROM graphatlas.relations WHERE src_id = 'Ava Chen'
+      SELECT keywords, description, source_chunk_ids FROM graphatlas.relations WHERE src_id = 'TestPerson'
     `;
-    expect(rel.keywords).toBe("leads");
-    expect(rel.description).toBe("Ava Chen leads Aurora Dynamics.");
-    expect(rel.source_chunk_ids.sort()).toEqual(["doc-fake-000", "doc-fake-001"]);
+    expect(rel.keywords).toBe("runs");
+    expect(rel.description).toBe("TestPerson runs TestOrg.");
+    expect(rel.source_chunk_ids.sort()).toEqual([...CHUNK_IDS].sort());
   });
 
   test("embeddings and tsvector are populated; document becomes ready", async () => {
     const sql = getDb();
     const [chunk] = await sql<{ embedding: unknown; text_search: unknown }[]>`
-      SELECT embedding, text_search FROM graphatlas.chunks WHERE id = 'doc-fake-000'
+      SELECT embedding, text_search FROM graphatlas.chunks WHERE id = ${CHUNK_IDS[0]}
     `;
     expect(chunk.embedding).not.toBeNull();
     expect(chunk.text_search).not.toBeNull();
@@ -116,13 +120,22 @@ describe("ETL staging -> runtime", () => {
     `;
     expect(Number(chunkCount[0].n)).toBe(2);
     const entityCount = await sql<{ n: bigint }[]>`
-      SELECT count(*) AS n FROM graphatlas.entities WHERE id IN ('Aurora Dynamics', 'Ava Chen')
+      SELECT count(*) AS n FROM graphatlas.entities WHERE id IN (${ENTITY_NAMES[0]}, ${ENTITY_NAMES[1]})
     `;
     expect(Number(entityCount[0].n)).toBe(2);
   });
 });
 
 afterAll(async () => {
+  const sql = getDb();
+  await sql`
+    DELETE FROM graphatlas.relations WHERE src_id IN (${ENTITY_NAMES[0]}, ${ENTITY_NAMES[1]}) OR tgt_id IN (${ENTITY_NAMES[0]}, ${ENTITY_NAMES[1]})
+  `;
+  await sql`
+    DELETE FROM graphatlas.entities WHERE id IN (${ENTITY_NAMES[0]}, ${ENTITY_NAMES[1]})
+  `;
+  await sql`DELETE FROM graphatlas.chunks WHERE document_id = ${docId}`;
+  await sql`DELETE FROM graphatlas.documents WHERE id = ${docId}`;
   await closeDb();
   rmSync(fixtureDir, { recursive: true, force: true });
 });
