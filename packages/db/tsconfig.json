@@ -4,7 +4,8 @@
     "types": ["@types/bun"],
     "baseUrl": ".",
     "paths": {
-      "@graphatlas/contracts": ["../../packages/contracts/src/index.ts"]
+      "@graphatlas/contracts": ["../../packages/contracts/src/index.ts"],
+      "@graphatlas/core": ["../../packages/core/src/index.ts"]
     }
   },
   "include": ["src"]

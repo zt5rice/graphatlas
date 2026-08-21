@@ -10,6 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
+  "dependencies": {
+    "postgres": "^3.4.0"
+  },
   "devDependencies": {
     "typescript": "^5.6.0"
   }

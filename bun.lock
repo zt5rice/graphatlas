@@ -48,6 +48,9 @@
     "packages/core": {
       "name": "@graphatlas/core",
       "version": "0.1.0",
+      "dependencies": {
+        "postgres": "^3.4.0",
+      },
       "devDependencies": {
         "typescript": "^5.6.0",
       },
@@ -59,6 +62,7 @@
         "postgres": "^3.4.0",
       },
       "devDependencies": {
+        "@graphatlas/core": "workspace:*",
         "@types/bun": "^1.1.0",
         "typescript": "^5.6.0",
       },
