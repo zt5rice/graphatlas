@@ -8,13 +8,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:api": "bun --cwd apps/api dev",
-    "dev:web": "bun --cwd apps/web dev",
+    "dev:api": "bun --env-file=../../.env --cwd apps/api dev",
+    "dev:web": "bun --env-file=../../.env --cwd apps/web dev",
     "dev:all": "./scripts/start-dev.sh",
     "setup": "./scripts/setup.sh",
     "typecheck": "bun run --cwd apps/api typecheck && bun run --cwd apps/web typecheck && bun run --cwd packages/core typecheck && bun run --cwd packages/db typecheck && bun run --cwd packages/contracts typecheck",
     "test": "bun test",
-    "db:init": "bun run --cwd packages/db migrate",
+    "db:init": "bun --env-file=../../.env run --cwd packages/db migrate && bun --env-file=../../.env run --cwd packages/db verify",
     "build:web": "bun --cwd apps/web build"
   },
   "devDependencies": {
