@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import os
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -12,7 +14,7 @@ from lightrag import LightRAG
 from lightrag.llm.openai import openai_complete_if_cache, openai_embed
 from lightrag.utils import EmbeddingFunc
 
-from orgrag_extract.config import Settings, configure_postgres_env, get_settings
+from orgrag_extract.config import Settings, get_settings
 
 logger = logging.getLogger("orgrag_extract")
 
@@ -52,7 +54,6 @@ async def _embedding_func(texts: list[str]):
 
 
 def build_lightrag(workspace: str, settings: Settings) -> LightRAG:
-    configure_postgres_env()
     rag = LightRAG(
         working_dir=settings.working_dir,
         workspace=workspace,
@@ -64,11 +65,15 @@ def build_lightrag(workspace: str, settings: Settings) -> LightRAG:
             func=_embedding_func,
             model_name=settings.embedding_model,
         ),
-        kv_storage="PGKVStorage",
-        vector_storage="PGVectorStorage",
-        doc_status_storage="PGDocStatusStorage",
-        graph_storage="PGGraphStorage",
-        addon_params={"language": "English"},
+        addon_params={
+            "language": "English",
+            "chunker": {
+                "fixed_token": {
+                    "chunk_token_size": settings.chunk_token_size,
+                    "chunk_overlap_token_size": settings.chunk_overlap_token_size,
+                }
+            },
+        },
         log_level="WARNING",
     )
     return rag
@@ -82,15 +87,18 @@ async def ingest_file(workspace: str, path: str) -> IngestResult:
     text = Path(path).read_text(encoding="utf-8")
     await rag.ainsert(
         text,
-        file_path=path,
-        chunk_token_size=settings.chunk_token_size,
-        chunk_overlap_token_size=settings.chunk_overlap_token_size,
+        file_paths=[path],
     )
 
     graph = await rag.get_knowledge_graph(node_label="*", max_depth=3)
     entities = len(getattr(graph, "nodes", []) or [])
     relations = len(getattr(graph, "edges", []) or [])
-    chunks = len(getattr(rag, "chunks", {}) or {})
+    chunk_store = Path(settings.working_dir) / workspace / "kv_store_text_chunks.json"
+    chunks = (
+        len(json.loads(chunk_store.read_text(encoding="utf-8")))
+        if chunk_store.exists()
+        else 0
+    )
 
     return IngestResult(
         workspace=workspace,
@@ -102,20 +110,11 @@ async def ingest_file(workspace: str, path: str) -> IngestResult:
 
 
 async def cleanup_workspace(workspace: str) -> None:
-    """Drop all LightRAG PG rows for the staging workspace (idempotent)."""
-    import psycopg
-
+    """Remove the staging workspace directory (JSON storage), idempotent."""
     s = get_settings()
-    with psycopg.connect(s.database_url, autocommit=True) as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT tablename FROM pg_tables
-                WHERE schemaname = 'public' AND tablename LIKE %s
-                """,
-                (f"%{workspace}%",),
-            )
-            tables = [r[0] for r in cur.fetchall()]
-            for table in tables:
-                cur.execute(f'DROP TABLE IF EXISTS "{table}" CASCADE')
-            logger.info("cleanup: dropped %d staging tables for workspace=%s", len(tables), workspace)
+    ws_dir = Path(s.working_dir) / workspace
+    if ws_dir.exists():
+        shutil.rmtree(ws_dir)
+        logger.info("cleanup: removed staging workspace dir %s", ws_dir)
+    else:
+        logger.info("cleanup: staging workspace dir %s already absent", ws_dir)

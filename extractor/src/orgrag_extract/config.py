@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from urllib.parse import unquote, urlparse
 
 
 def _require(name: str) -> str:
@@ -56,16 +55,3 @@ def get_settings() -> Settings:
         chunk_token_size=int(os.getenv("CHUNK_TOKEN_SIZE", "512")),
         chunk_overlap_token_size=int(os.getenv("CHUNK_OVERLAP_TOKEN_SIZE", "64")),
     )
-
-
-def configure_postgres_env() -> None:
-    """Split a single DATABASE_URL into the POSTGRES_* vars LightRAG expects."""
-    p = urlparse(os.getenv("DATABASE_URL", ""))
-    if not p.hostname:
-        raise RuntimeError("DATABASE_URL must include a host")
-    os.environ["POSTGRES_HOST"] = p.hostname
-    os.environ["POSTGRES_PORT"] = str(p.port or 5432)
-    os.environ["POSTGRES_USER"] = unquote(p.username or "")
-    os.environ["POSTGRES_PASSWORD"] = unquote(p.password or "")
-    os.environ["POSTGRES_DATABASE"] = unquote(p.path.lstrip("/"))
-    os.environ.setdefault("POSTGRES_VECTOR_INDEX_TYPE", "HNSW")
