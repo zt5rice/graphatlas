@@ -1,0 +1,46 @@
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Node / Bun
+node_modules/
+dist/
+build/
+.bun/
+*.tsbuildinfo
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Local scratch (never commit)
+tmp/
+*.sqlite
+
+# Local-only detailed plans (execution basis; do not publish)
+*.local.md
+
+# Personal learning docs (local-only; contain local absolute paths / course material)
+docs/LEARNING_CHECKLIST.md
+docs/学习待办清单.md
+docs/学习待办清单.html
+FF-CompanyBrain*
+
+# Personal learning to-do list (local only, never commit)
+docs/学习待办清单.md
+docs/学习待办清单.html
+docs/LEARNING_CHECKLIST.md
+
+# Resume (local only, never commit)
+docs/resume.md
