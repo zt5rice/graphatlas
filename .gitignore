@@ -27,6 +27,7 @@ __pycache__/
 # Local scratch (never commit)
 tmp/
 *.sqlite
+data/uploads/
 
 # Local-only detailed plans (execution basis; do not publish)
 *.local.md
