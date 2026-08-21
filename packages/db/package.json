@@ -9,6 +9,7 @@
   "scripts": {
     "migrate": "bun src/migrate.ts",
     "verify": "bun src/verify.ts",
+    "etl": "bun src/etl.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },

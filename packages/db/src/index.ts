@@ -8,3 +8,6 @@ export * from "./migrate";
 export * from "./verify";
 export * from "./repo/documents";
 export * from "./repo/jobs";
+export * from "./etl/load";
+export * from "./etl/run";
+export * from "./etl/embeddings";
