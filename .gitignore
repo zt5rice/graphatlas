@@ -28,6 +28,7 @@ __pycache__/
 tmp/
 *.sqlite
 data/uploads/
+.graph-rag-workdir/
 
 # Local-only detailed plans (execution basis; do not publish)
 *.local.md

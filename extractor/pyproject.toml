@@ -5,7 +5,6 @@ description = "GraphAtlas graph extraction sidecar (LightRAG staging)"
 requires-python = ">=3.11"
 dependencies = [
   "lightrag-hku==1.5.0",
-  "psycopg[binary]>=3.2.0",
   "python-dotenv>=1.0.0",
   "openai>=1.0.0",
 ]
