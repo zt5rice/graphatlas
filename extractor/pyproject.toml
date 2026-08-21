@@ -1,0 +1,24 @@
+[project]
+name = "orgrag-extract"
+version = "0.1.0"
+description = "GraphAtlas graph extraction sidecar (LightRAG staging)"
+requires-python = ">=3.11"
+dependencies = [
+  "lightrag-hku==1.5.0",
+  "psycopg[binary]>=3.2.0",
+  "python-dotenv>=1.0.0",
+  "openai>=1.0.0",
+]
+
+[project.scripts]
+orgrag-extract = "orgrag_extract.cli:main"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/orgrag_extract"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
