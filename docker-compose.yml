@@ -1,0 +1,20 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: graphatlas-db
+    environment:
+      POSTGRES_USER: graphatlas
+      POSTGRES_PASSWORD: graphatlas
+      POSTGRES_DB: graphatlas
+    ports:
+      - "5432:5432"
+    volumes:
+      - graphatlas-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graphatlas -d graphatlas"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  graphatlas-pgdata:
