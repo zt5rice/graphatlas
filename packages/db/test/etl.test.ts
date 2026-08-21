@@ -75,13 +75,13 @@ describe("ETL staging -> runtime", () => {
     expect(result.chunks).toBe(2);
     expect(result.entities).toBe(2);
     expect(result.relations).toBe(1);
-    expect(result.chunkIds.sort()).toEqual([...CHUNK_IDS].sort());
+    expect(result.chunkIds.map((id) => id.split(":")[1]).sort()).toEqual([...CHUNK_IDS].sort());
 
     const sql = getDb();
     const rows = await sql<{ id: string }[]>`
       SELECT id FROM graphatlas.chunks WHERE document_id = ${docId} ORDER BY id
     `;
-    expect(rows.map((r) => r.id)).toEqual([...CHUNK_IDS].sort());
+    expect(rows.map((r) => r.id.split(":")[1]).sort()).toEqual([...CHUNK_IDS].sort());
   });
 
   test("entities/relations carry parsed descriptions and chunk provenance", async () => {
@@ -103,7 +103,7 @@ describe("ETL staging -> runtime", () => {
   test("embeddings and tsvector are populated; document becomes ready", async () => {
     const sql = getDb();
     const [chunk] = await sql<{ embedding: unknown; text_search: unknown }[]>`
-      SELECT embedding, text_search FROM graphatlas.chunks WHERE id = ${CHUNK_IDS[0]}
+      SELECT embedding, text_search FROM graphatlas.chunks WHERE id LIKE ${`%:${CHUNK_IDS[0]}`}
     `;
     expect(chunk.embedding).not.toBeNull();
     expect(chunk.text_search).not.toBeNull();

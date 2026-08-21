@@ -50,9 +50,13 @@ export async function runEtl(
     await tx`DELETE FROM graphatlas.chunks WHERE document_id = ${documentId}`;
 
     for (const [i, c] of data.chunks.entries()) {
+      // LightRAG chunk ids are content-addressed (md5 of the file), so the same
+      // content ingested twice yields identical staging ids. Namespace with the
+      // document id to keep the runtime PK unique across documents.
+      const runtimeChunkId = `${documentId}:${c.id}`;
       await tx`
         INSERT INTO graphatlas.chunks (id, document_id, chunk_index, text, embedding, embedding_model, embedding_dim)
-        VALUES (${c.id}, ${documentId}, ${i}, ${c.content}, ${vecLiteral(chunkVecs[i])}::vector, ${model}, ${dim})
+        VALUES (${runtimeChunkId}, ${documentId}, ${i}, ${c.content}, ${vecLiteral(chunkVecs[i])}::vector, ${model}, ${dim})
       `;
     }
 
@@ -98,6 +102,6 @@ export async function runEtl(
     chunks: data.chunks.length,
     entities: data.entities.length,
     relations: data.relations.length,
-    chunkIds: data.chunks.map((c) => c.id),
+    chunkIds: data.chunks.map((c) => `${documentId}:${c.id}`),
   };
 }
