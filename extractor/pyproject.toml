@@ -12,6 +12,9 @@ dependencies = [
 [project.scripts]
 orgrag-extract = "orgrag_extract.cli:main"
 
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
 [tool.uv]
 package = true
 

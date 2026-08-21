@@ -7,6 +7,7 @@ import { getDb, closeDb } from "../src/db";
 import { insertDocument } from "../src/repo/documents";
 import { runEtl } from "../src/etl/run";
 import type { EmbedFn } from "../src/etl/run";
+import { migrate } from "../src/migrate";
 
 const DIM = 1536;
 const RUN = randomUUID().slice(0, 8);
@@ -62,6 +63,7 @@ function writeStaging(dir: string) {
 }
 
 beforeAll(async () => {
+  await migrate(); // idempotent; ensure schema exists on a fresh database
   fixtureDir = join(tmpdir(), `graphatlas-etl-test-${Date.now()}`);
   mkdirSync(fixtureDir, { recursive: true });
   writeStaging(fixtureDir);
