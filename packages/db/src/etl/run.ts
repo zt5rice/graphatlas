@@ -66,12 +66,14 @@ export async function runEtl(
       `;
       const merged = Array.from(new Set([...(existing[0]?.source_chunk_ids ?? []), ...e.chunkIds]));
       await tx`
-        INSERT INTO graphatlas.entities (id, name, entity_type, description, source_chunk_ids, embedding)
-        VALUES (${e.name}, ${e.name}, 'UNKNOWN', ${e.description}, ${tx.json(merged)}, ${vecLiteral(entityVecs[i])}::vector)
+        INSERT INTO graphatlas.entities (id, name, entity_type, description, source_chunk_ids, embedding, embedding_model, embedding_dim)
+        VALUES (${e.name}, ${e.name}, 'UNKNOWN', ${e.description}, ${tx.json(merged)}, ${vecLiteral(entityVecs[i])}::vector, ${model}, ${dim})
         ON CONFLICT (id) DO UPDATE SET
           description = EXCLUDED.description,
           source_chunk_ids = EXCLUDED.source_chunk_ids,
-          embedding = EXCLUDED.embedding
+          embedding = EXCLUDED.embedding,
+          embedding_model = EXCLUDED.embedding_model,
+          embedding_dim = EXCLUDED.embedding_dim
       `;
     }
 
@@ -81,14 +83,16 @@ export async function runEtl(
       `;
       const merged = Array.from(new Set([...(existing[0]?.source_chunk_ids ?? []), ...r.chunkIds]));
       await tx`
-        INSERT INTO graphatlas.relations (id, src_id, tgt_id, keywords, description, weight, source_chunk_ids, embedding)
-        VALUES (${randomUUID()}, ${r.srcId}, ${r.tgtId}, ${r.keywords}, ${r.description}, 1.0, ${tx.json(merged)}, ${vecLiteral(relationVecs[i])}::vector)
+        INSERT INTO graphatlas.relations (id, src_id, tgt_id, keywords, description, weight, source_chunk_ids, embedding, embedding_model, embedding_dim)
+        VALUES (${randomUUID()}, ${r.srcId}, ${r.tgtId}, ${r.keywords}, ${r.description}, 1.0, ${tx.json(merged)}, ${vecLiteral(relationVecs[i])}::vector, ${model}, ${dim})
         ON CONFLICT (src_id, tgt_id) DO UPDATE SET
           keywords = EXCLUDED.keywords,
           description = EXCLUDED.description,
           weight = EXCLUDED.weight,
           source_chunk_ids = EXCLUDED.source_chunk_ids,
-          embedding = EXCLUDED.embedding
+          embedding = EXCLUDED.embedding,
+          embedding_model = EXCLUDED.embedding_model,
+          embedding_dim = EXCLUDED.embedding_dim
       `;
     }
   });
