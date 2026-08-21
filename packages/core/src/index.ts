@@ -7,3 +7,5 @@ export * from "./retrieval/types";
 export * from "./retrieval/snippet";
 export * from "./retrieval/keyword";
 export * from "./retrieval/vector";
+export * from "./retrieval/bfs";
+export * from "./retrieval/graph";
