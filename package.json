@@ -12,6 +12,7 @@
     "dev:web": "bun --env-file=../../.env --cwd apps/web dev",
     "dev:all": "./scripts/start-dev.sh",
     "setup": "./scripts/setup.sh",
+    "lint": "bun run typecheck",
     "typecheck": "bun run --cwd apps/api typecheck && bun run --cwd apps/web typecheck && bun run --cwd packages/core typecheck && bun run --cwd packages/db typecheck && bun run --cwd packages/contracts typecheck",
     "test": "bun test",
     "db:init": "bun --env-file=../../.env run --cwd packages/db migrate && bun --env-file=../../.env run --cwd packages/db verify",
