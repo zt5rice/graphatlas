@@ -6,3 +6,4 @@
 export * from "./retrieval/types";
 export * from "./retrieval/snippet";
 export * from "./retrieval/keyword";
+export * from "./retrieval/vector";
