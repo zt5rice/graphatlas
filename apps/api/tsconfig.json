@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["@types/bun"]
+    "types": ["@types/bun"],
+    "baseUrl": ".",
+    "paths": {
+      "@graphatlas/db": ["../../packages/db/src/index.ts"],
+      "@graphatlas/core": ["../../packages/core/src/index.ts"],
+      "@graphatlas/contracts": ["../../packages/contracts/src/index.ts"]
+    }
   },
   "include": ["src"]
 }

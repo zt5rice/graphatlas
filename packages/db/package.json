@@ -8,8 +8,12 @@
   },
   "scripts": {
     "migrate": "bun src/migrate.ts",
+    "verify": "bun src/verify.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
+  },
+  "dependencies": {
+    "postgres": "^3.4.0"
   },
   "devDependencies": {
     "@types/bun": "^1.1.0",
