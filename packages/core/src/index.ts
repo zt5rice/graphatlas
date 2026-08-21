@@ -1,6 +1,8 @@
 /**
  * @graphatlas/core
  * Multi-engine retrieval primitives: keyword / vector / graph recall, RRF fusion,
- * mode router, and BFS traversal. Implemented in Day 3 (ZHA-65..ZHA-68).
+ * mode router, and BFS traversal.
  */
-export const CORE_VERSION = "0.1.0";
+export * from "./retrieval/types";
+export * from "./retrieval/snippet";
+export * from "./retrieval/keyword";
