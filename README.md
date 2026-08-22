@@ -54,3 +54,20 @@ benchmark/       evaluation runner (Day 3)
 
 Every number in this README (performance, accuracy) is measured by this repo's own
 benchmark scripts and traced to `benchmark/results/*.json`. No preset figures.
+
+## Measured results (2026-08-22, 50-question golden set)
+
+Run: `bun benchmark --mode <mode> --limit 50` — full details in
+[docs/BENCHMARK.md](./docs/BENCHMARK.md) and JSONs under `benchmark/results/`.
+
+| Mode | Hit@5 | EntityRecall@10 | Faithfulness (1–5) | p95 (ms) |
+|---|---|---|---|---|
+| **hybrid (RRF)** | **0.840** | 0.688 | 4.38 | 537 |
+| vector-only | 0.800 | 0.688 | 4.36 | 616 |
+| graph-only | 0.240 | 0.684 | 2.44 | 10 |
+| keyword-only | 0.000 | 0.000 | 1.26 | 27 |
+
+> Multi-engine RRF fusion improved answer coverage (Hit@5) by **+4 pp over
+> vector-only** on my 50-question benchmark (0.840 vs 0.800), while keeping graph
+> evidence (EntityRecall@10 = 0.688). Numbers verified from
+> `benchmark/results/2026-08-22-hybrid.json` etc.

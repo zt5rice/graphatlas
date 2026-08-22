@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { getDb, closeDb } from "../packages/db/src/index.ts";
 import { searchDocuments, type RecallPath } from "../apps/api/src/services/search.ts";
+import { judgeFaithfulness, judgeHit } from "./judge.ts";
 
 type Question = {
   id: string;
@@ -23,6 +24,9 @@ type PerQuestion = {
   chunk_recall_10: number | null;
   top_chunk_ids: string[];
   evidence_entities: string[];
+  hit_1: boolean | null;
+  hit_5: boolean | null;
+  faithfulness: number | null;
 };
 
 const MODE_PATHS: Record<string, RecallPath[]> = {
@@ -79,6 +83,23 @@ async function run(mode: string, limit: number, outPath: string) {
         ? null
         : q.expected_sources.filter((src) => topFilenames.has(src)).length / q.expected_sources.length;
 
+    const evidenceFor = (k: number) =>
+      response.results
+        .slice(0, k)
+        .map((r) => r.text)
+        .join("\n---\n")
+        .slice(0, 4000);
+
+    const [hit1, hit5, faithfulness] = await Promise.all(
+      [
+        judgeHit(q.question, q.golden_answer, evidenceFor(1)),
+        judgeHit(q.question, q.golden_answer, evidenceFor(5)),
+        judgeFaithfulness(q.question, q.golden_answer, evidenceFor(5)),
+      ].map((promise) =>
+        promise.catch(() => null),
+      ),
+    );
+
     perQuestion.push({
       id: q.id,
       category: q.category,
@@ -87,6 +108,9 @@ async function run(mode: string, limit: number, outPath: string) {
       chunk_recall_10: chunkRecall,
       top_chunk_ids: topChunkIds,
       evidence_entities: response.evidence.entities.map((e) => e.name).slice(0, 20),
+      hit_1: hit1 as boolean | null,
+      hit_5: hit5 as boolean | null,
+      faithfulness: faithfulness as number | null,
     });
   }
 
@@ -98,6 +122,11 @@ async function run(mode: string, limit: number, outPath: string) {
     .map((q) => q.chunk_recall_10)
     .filter((v): v is number => v !== null);
   const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+  const hit1s = perQuestion.map((q) => q.hit_1).filter((v): v is boolean => v !== null);
+  const hit5s = perQuestion.map((q) => q.hit_5).filter((v): v is boolean => v !== null);
+  const faithfulnessScores = perQuestion
+    .map((q) => q.faithfulness)
+    .filter((v): v is number => v !== null);
   const estTokens = selected.reduce(
     (sum, q) => sum + q.question.split(/\s+/).length,
     0,
@@ -112,6 +141,9 @@ async function run(mode: string, limit: number, outPath: string) {
     metrics: {
       entity_recall_10: mean(entityRecalls),
       chunk_recall_10: mean(chunkRecalls),
+      hit_1: mean(hit1s.map((v) => (v ? 1 : 0))),
+      hit_5: mean(hit5s.map((v) => (v ? 1 : 0))),
+      faithfulness: mean(faithfulnessScores),
       latency_p50_ms: percentile(latencies, 50),
       latency_p95_ms: percentile(latencies, 95),
       total_ms: latencies.reduce((a, b) => a + b, 0),
@@ -121,7 +153,7 @@ async function run(mode: string, limit: number, outPath: string) {
     },
     per_question: perQuestion,
     fusion: { method: "rrf", k: 60 },
-    notes: "v1 retrieval metrics; Hit@1/5 + faithfulness require LLM judge (added in ZHA-77).",
+    notes: "Retrieval metrics + LLM-judged Hit@1/Hit@5 and faithfulness (ZHA-77).",
   };
 
   mkdirSync(join("benchmark", "results"), { recursive: true });
