@@ -56,6 +56,13 @@ export function search(query: string): Promise<SearchResponse> {
   });
 }
 
+export function fetchGraph(entity?: string): Promise<import("../graph/transform").GraphResponse> {
+  const params = new URLSearchParams();
+  if (entity) params.set("entity", entity);
+  params.set("depth", "1");
+  return request(`/graph?${params.toString()}`);
+}
+
 export type ChatStreamEvent = { type: string; data: Record<string, unknown> };
 
 export async function chatStream(

@@ -44,3 +44,6 @@ jobs:
 
       - name: Build web
         run: bun run build:web
+
+      - name: Web unit/component tests (vitest)
+        run: bun run test:web
