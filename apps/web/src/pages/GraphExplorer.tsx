@@ -76,7 +76,14 @@ export default function GraphExplorer() {
         Click a node to expand its 1-hop neighborhood. Node color = entity type; edge width = weight.
       </p>
       <div className="h-[560px] rounded border border-slate-800 bg-slate-900">
-        <ReactFlow nodes={nodes} edges={edges} onNodeClick={onNodeClick} fitView>
+        <ReactFlow
+          key={`${nodes.length}-${edges.length}`}
+          nodes={nodes}
+          edges={edges}
+          onNodeClick={onNodeClick}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+        >
           <Background />
           <Controls />
         </ReactFlow>
