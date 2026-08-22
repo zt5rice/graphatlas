@@ -30,6 +30,10 @@ tmp/
 data/uploads/
 .graph-rag-workdir/
 
+# Playwright artifacts
+test-results/
+playwright-report/
+
 # Local-only detailed plans (execution basis; do not publish)
 *.local.md
 
