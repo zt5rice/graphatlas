@@ -68,6 +68,20 @@ export async function runAgent(
 
   // Iteration budget exhausted: request a final answer without tools.
   const final = await llm(messages, []);
+  if (final.tool_calls.length === 0 && final.content) {
+    const dsml = extractDsmlToolCalls(final.content);
+    if (dsml.toolCalls.length > 0) {
+      final.tool_calls = dsml.toolCalls;
+      final.content = dsml.cleaned || null;
+    }
+  }
+  if (final.tool_calls.length > 0) {
+    return {
+      answer: "I need more retrieval rounds to answer this precisely. The evidence above shows the relevant chunks.",
+      trace,
+      tool_calls: toolCalls,
+    };
+  }
   return { answer: final.content ?? "", trace, tool_calls: toolCalls };
 }
 
@@ -158,6 +172,13 @@ export async function runAgentStream(
       final.tool_calls = dsml.toolCalls;
       final.content = dsml.cleaned || null;
     }
+  }
+  if (final.tool_calls.length > 0) {
+    // Budget exhausted but the model still wants tools: never leak DSML markup.
+    const fallback = "I need more retrieval rounds to answer this precisely. The evidence above shows the relevant chunks.";
+    onEvent({ type: "delta", text: fallback });
+    onEvent({ type: "done", answer: fallback, trace, tool_calls: toolCalls });
+    return;
   }
   for (const delta of buffered) {
     onEvent({ type: "delta", text: delta });
