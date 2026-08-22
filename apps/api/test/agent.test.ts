@@ -99,6 +99,26 @@ describe("agent tool loop", () => {
     expect(result.answer).toContain(ENTITY);
     expect(result.answer).not.toContain("DSML");
   });
+
+  test("never leaks DSML when the budget is exhausted on the final round", async () => {
+    let calls = 0;
+    agentDeps.llm = async (): Promise<LlmResponse> => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          content: null,
+          tool_calls: [{ id: "c1", name: "lookup_entity", arguments: JSON.stringify({ name: ENTITY }) }],
+        };
+      }
+      return {
+        content: `<｜DSML｜tool_calls>\n<｜DSML｜invoke name="search_hybrid">\n<｜DSML｜parameter name="query" string="true">more<｜DSML｜parameter>\n</｜DSML｜invoke>\n</｜DSML｜tool_calls>`,
+        tool_calls: [],
+      };
+    };
+    const result = await runAgent("Question", { maxIterations: 1 });
+    expect(result.answer).not.toContain("DSML");
+    expect(result.answer).toContain("more retrieval rounds");
+  });
 });
 
 afterAll(async () => {
