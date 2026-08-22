@@ -19,7 +19,7 @@ const TYPE_COLORS: Record<string, string> = {
 export function graphToFlow(data: GraphResponse): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = data.nodes.map((n, i) => ({
     id: n.id,
-    position: { x: (i % 6) * 220, y: Math.floor(i / 6) * 160 },
+    position: { x: (i % 5) * 320, y: Math.floor(i / 5) * 240 },
     data: { label: n.label },
     style: {
       background: TYPE_COLORS[n.type?.toUpperCase()] ?? TYPE_COLORS.UNKNOWN,
@@ -38,6 +38,10 @@ export function graphToFlow(data: GraphResponse): { nodes: Node[]; edges: Edge[]
       strokeWidth: Math.max(1, Math.min(4, (e.weight ?? 1) * 2)),
       stroke: "#64748b",
     },
+    labelStyle: { fill: "#cbd5e1", fontSize: 11, fontWeight: 500 },
+    labelBgStyle: { fill: "#0f172a", fillOpacity: 0.9, stroke: "#475569", strokeWidth: 1 },
+    labelBgPadding: [6, 3] as [number, number],
+    labelBgBorderRadius: 6,
   }));
   return { nodes, edges };
 }
