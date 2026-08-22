@@ -13,7 +13,7 @@
 ```bash
 bun install              # install all workspaces
 bun run setup            # copy .env.example -> .env, start DB, install deps
-bun run dev:all          # API (:3001) + web (:3000)
+bun run dev:all          # API (:3001) + web (:5173)
 bun run typecheck        # all workspaces
 bun test                 # unit/integration tests (bun test)
 bun run db:init          # run migrations (packages/db)

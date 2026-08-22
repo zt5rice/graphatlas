@@ -35,7 +35,7 @@ cp .env.example .env
 bun run dev:all
 ```
 
-Open http://localhost:3000 (web) and http://localhost:3001/health (API).
+Open http://localhost:5173 (web) and http://localhost:3001/health (API).
 
 ## Monorepo layout
 

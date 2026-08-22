@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "==> Starting GraphAtlas dev stack (API :3001, web :3000)"
+echo "==> Starting GraphAtlas dev stack (API :3001, web :5173)"
 
 bun run --cwd apps/api dev &
 API_PID=$!
