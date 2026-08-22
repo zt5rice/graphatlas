@@ -40,7 +40,10 @@ jobs:
         run: bun run lint
 
       - name: Run tests (unit + integration against PostgreSQL 17 + pgvector)
-        run: bun test
+        run: bun run test
 
       - name: Build web
         run: bun run build:web
+
+      - name: Web unit/component tests (vitest)
+        run: bun run test:web
