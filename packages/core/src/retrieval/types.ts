@@ -30,3 +30,28 @@ export type VectorRecallResult = {
   entities: EntityHit[];
   relations: RelationHit[];
 };
+
+export type GraphEntity = {
+  id: string;
+  name: string;
+  entityType: string;
+  description: string;
+  rank: number;
+};
+
+export type GraphRelation = {
+  id: string;
+  srcId: string;
+  tgtId: string;
+  keywords: string;
+  description: string;
+  rank: number;
+  sourceChunkIds: string[];
+};
+
+export type GraphRecallResult = {
+  seeds: string[];
+  entities: GraphEntity[];
+  relations: GraphRelation[];
+  chunkIds: string[];
+};
