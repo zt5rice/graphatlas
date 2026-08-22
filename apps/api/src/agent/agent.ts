@@ -8,7 +8,10 @@ Answer using ONLY information returned by the tools. For every factual claim, ci
 source chunk id in the form [chunk:<chunk_id>]. If the tools do not contain the answer,
 state that the information is not documented. Never invent facts, people, or numbers.
 Use the provided function-calling tools for retrieval; never output XML/DSML markup
-in your reply.`;
+in your reply.
+Prefer graph_neighbors or lookup_entity for relationship and counting questions.
+Do not call the same tool twice for the same intent — retrieve once, then answer
+directly from the evidence you already have. Cite chunk ids exactly as [chunk:<chunk_id>].`;
 
 /**
  * Hand-written tool-calling loop (no LangChain): up to `maxIterations` rounds of
@@ -18,7 +21,7 @@ export async function runAgent(
   question: string,
   opts: { maxIterations?: number; history?: LlmMessage[] } = {},
 ): Promise<AgentResult> {
-  const maxIterations = opts.maxIterations ?? 4;
+  const maxIterations = opts.maxIterations ?? 6;
   const trace: AgentTraceEntry[] = [];
   const messages: LlmMessage[] = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -99,7 +102,7 @@ export async function runAgentStream(
   question: string,
   opts: { maxIterations?: number; history?: LlmMessage[]; onEvent: (event: AgentEvent) => void },
 ): Promise<void> {
-  const maxIterations = opts.maxIterations ?? 4;
+  const maxIterations = opts.maxIterations ?? 6;
   const onEvent = opts.onEvent;
   const trace: AgentTraceEntry[] = [];
   const messages: LlmMessage[] = [
