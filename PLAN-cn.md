@@ -245,7 +245,7 @@ eval_runs(id text pk, mode text, started_at timestamptz, finished_at timestamptz
 
 ---
 
-## 5. 五天节奏（每天以绿灯门禁收尾）
+## 5. 五个里程碑（5 Milestones，Day 1–5）
 
 | 天 | 工作 | 门禁（完成定义） |
 |---|---|---|

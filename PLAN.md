@@ -256,7 +256,7 @@ corpus git hash in each result JSON; human spot-check 10/50 questions.
 
 ---
 
-## 5. 5-Day Rhythm (each day ends with a green gate)
+## 5. Five Milestones (Day 1–5)
 
 | Day | Work | Gate (definition of done) |
 |---|---|---|
