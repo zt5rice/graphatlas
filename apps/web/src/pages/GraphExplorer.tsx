@@ -9,14 +9,20 @@ export default function GraphExplorer() {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [entity, setEntity] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const load = useCallback(async (name?: string) => {
     setLoading(true);
+    setError("");
     try {
       const data = await fetchGraph(name);
       const mapped = graphToFlow(data);
       setNodes(mapped.nodes);
       setEdges(mapped.edges);
+    } catch {
+      setNodes([]);
+      setEdges([]);
+      setError(name ? `No entity found for "${name}". Try a name from the overview.` : "Failed to load graph.");
     } finally {
       setLoading(false);
     }
@@ -65,6 +71,7 @@ export default function GraphExplorer() {
         </form>
         {loading && <span className="text-sm text-slate-400">loading…</span>}
       </div>
+      {error && <p className="text-sm text-rose-400">{error}</p>}
       <p className="text-xs text-slate-500">
         Click a node to expand its 1-hop neighborhood. Node color = entity type; edge width = weight.
       </p>
