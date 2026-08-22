@@ -70,7 +70,7 @@ Source of truth for creating the Linear project, milestones, and issues. One tic
 | # | Ticket | PR content | Branch slug | Acceptance / gate |
 |---|---|---|---|---|
 | GA-23 | Benchmark full run + measured results | 4 modes × 50 Qs; LLM-as-judge; results JSON in `benchmark/results/`; `docs/BENCHMARK.md` table | `benchmark-run` | all results JSON committed; numbers trace to JSON (no fabrication) |
-| GA-24 | README & docs polish | README (mermaid arch, quick start, tech→code map, demo video slot, measured results), `docs/API.md`, `docs/SOURCES.md` (provenance), LICENSE | `docs-polish` | reviewer can reproduce from README |
+| GA-24 | README & docs polish | README (mermaid arch, quick start, tech→code map, demo video slot, measured results), `docs/API.md`, LICENSE | `docs-polish` | reviewer can reproduce from README |
 | GA-25 | Demo video + v1.0 release | 5–8 min demo (upload → graph → QA → eval), link in README, tag `v1.0`, GitHub release | `demo-release` | video link live; tag pushed; release created |
 
 ## Creation notes
