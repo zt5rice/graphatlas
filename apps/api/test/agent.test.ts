@@ -80,6 +80,25 @@ describe("agent tool loop", () => {
     expect(result.trace).toHaveLength(3);
     expect(result.answer).toBe("Budget exhausted answer.");
   });
+
+  test("parses DSML tool calls emitted as model content", async () => {
+    let calls = 0;
+    agentDeps.llm = async (): Promise<LlmResponse> => {
+      calls += 1;
+      if (calls === 1) {
+        return {
+          content: `<｜DSML｜tool_calls>\n<｜DSML｜invoke name="lookup_entity">\n<｜DSML｜parameter name="name" string="true">${ENTITY}<｜DSML｜parameter>\n</｜DSML｜invoke>\n</｜DSML｜tool_calls>`,
+          tool_calls: [],
+        };
+      }
+      return { content: `The CEO is ${ENTITY} [chunk:${CHUNK}].`, tool_calls: [] };
+    };
+    const result = await runAgent("Who is the CEO?");
+    expect(result.tool_calls).toBe(1);
+    expect(result.trace[0]!.tool).toBe("lookup_entity");
+    expect(result.answer).toContain(ENTITY);
+    expect(result.answer).not.toContain("DSML");
+  });
 });
 
 afterAll(async () => {

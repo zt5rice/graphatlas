@@ -1,11 +1,14 @@
 import { agentDeps, defaultLlm, defaultStreamingLlm } from "./llm";
 import { executeTool, summarizeToolOutput, TOOLS } from "./tools";
+import { extractDsmlToolCalls } from "./dsml";
 import type { AgentResult, AgentTraceEntry, LlmMessage } from "./types";
 
 const SYSTEM_PROMPT = `You are GraphAtlas, an assistant for an enterprise knowledge base.
 Answer using ONLY information returned by the tools. For every factual claim, cite the
 source chunk id in the form [chunk:<chunk_id>]. If the tools do not contain the answer,
-state that the information is not documented. Never invent facts, people, or numbers.`;
+state that the information is not documented. Never invent facts, people, or numbers.
+Use the provided function-calling tools for retrieval; never output XML/DSML markup
+in your reply.`;
 
 /**
  * Hand-written tool-calling loop (no LangChain): up to `maxIterations` rounds of
@@ -27,6 +30,13 @@ export async function runAgent(
 
   for (let step = 1; step <= maxIterations; step++) {
     const response = await llm(messages, TOOLS);
+    if (response.tool_calls.length === 0 && response.content) {
+      const dsml = extractDsmlToolCalls(response.content);
+      if (dsml.toolCalls.length > 0) {
+        response.tool_calls = dsml.toolCalls;
+        response.content = dsml.cleaned || null;
+      }
+    }
     if (response.tool_calls.length === 0) {
       return { answer: response.content ?? "", trace, tool_calls: toolCalls };
     }
@@ -87,13 +97,27 @@ export async function runAgentStream(
   const llm = agentDeps.streamingLlm ?? defaultStreamingLlm;
 
   for (let step = 1; step <= maxIterations; step++) {
-    let content = "";
+    const buffered: string[] = [];
     const response = await llm(messages, TOOLS, (delta) => {
-      content += delta;
-      onEvent({ type: "delta", text: delta });
+      buffered.push(delta);
     });
+    if (response.tool_calls.length === 0 && response.content) {
+      const dsml = extractDsmlToolCalls(response.content);
+      if (dsml.toolCalls.length > 0) {
+        response.tool_calls = dsml.toolCalls;
+        response.content = dsml.cleaned || null;
+      }
+    }
     if (response.tool_calls.length === 0) {
-      onEvent({ type: "done", answer: content || response.content || "", trace, tool_calls: toolCalls });
+      for (const delta of buffered) {
+        onEvent({ type: "delta", text: delta });
+      }
+      onEvent({
+        type: "done",
+        answer: buffered.join("") || response.content || "",
+        trace,
+        tool_calls: toolCalls,
+      });
       return;
     }
 
@@ -124,14 +148,23 @@ export async function runAgentStream(
     }
   }
 
-  let content = "";
+  const buffered: string[] = [];
   const final = await llm(messages, [], (delta) => {
-    content += delta;
-    onEvent({ type: "delta", text: delta });
+    buffered.push(delta);
   });
+  if (final.tool_calls.length === 0 && final.content) {
+    const dsml = extractDsmlToolCalls(final.content);
+    if (dsml.toolCalls.length > 0) {
+      final.tool_calls = dsml.toolCalls;
+      final.content = dsml.cleaned || null;
+    }
+  }
+  for (const delta of buffered) {
+    onEvent({ type: "delta", text: delta });
+  }
   onEvent({
     type: "done",
-    answer: content || final.content || "",
+    answer: buffered.join("") || final.content || "",
     trace,
     tool_calls: toolCalls,
   });
