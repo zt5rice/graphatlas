@@ -102,7 +102,7 @@ export default function ChatPage() {
         </button>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-4">
         {messages.length === 0 && (
           <p className="text-slate-500 text-sm">
             Ask about the knowledge base, e.g. "Who does Ethan Brooks report to?"
@@ -126,7 +126,7 @@ export default function ChatPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded border border-slate-800 bg-slate-900 p-3">
+        <div className="max-h-40 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-3">
           <h3 className="mb-2 text-sm font-semibold text-slate-300">Tool trace</h3>
           {toolCalls.length === 0 && <p className="text-xs text-slate-500">No tool calls yet.</p>}
           <ol className="space-y-1 text-xs text-slate-400">
@@ -139,7 +139,7 @@ export default function ChatPage() {
           </ol>
         </div>
 
-        <div className="rounded border border-slate-800 bg-slate-900 p-3">
+        <div className="max-h-40 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-3">
           <h3 className="mb-2 text-sm font-semibold text-slate-300">Evidence</h3>
           {evidence.length === 0 && <p className="text-xs text-slate-500">No evidence yet.</p>}
           <div className="space-y-2">
