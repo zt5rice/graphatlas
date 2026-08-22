@@ -4,6 +4,7 @@ import { pingDb } from "@graphatlas/db";
 import { documentsRouter } from "./routes/documents";
 import { jobsRouter } from "./routes/jobs";
 import { searchRouter } from "./routes/search";
+import { chatRouter } from "./routes/chat";
 
 export function createApp(): Hono {
   const app = new Hono();
@@ -23,6 +24,7 @@ export function createApp(): Hono {
   app.route("/api/v1/documents", documentsRouter);
   app.route("/api/v1", jobsRouter);
   app.route("/api/v1", searchRouter);
+  app.route("/api/v1", chatRouter);
 
   return app;
 }
