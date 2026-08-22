@@ -47,6 +47,14 @@ describe("GET /api/v1/graph", () => {
     const res = await app.request("/api/v1/graph?entity=nonexistent-entity");
     expect(res.status).toBe(404);
   });
+
+  test("fuzzy match resolves partial entity names", async () => {
+    const partial = A.slice(0, Math.max(6, A.length - 3));
+    const res = await app.request(`/api/v1/graph?entity=${encodeURIComponent(partial)}`);
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { nodes: { label: string }[] };
+    expect(data.nodes.some((n) => n.label === A)).toBe(true);
+  });
 });
 
 afterAll(async () => {

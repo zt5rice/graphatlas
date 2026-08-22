@@ -14,9 +14,27 @@ graphRouter.get("/graph", async (c) => {
 
   let nodes: GraphNodeOut[] = [];
   let edges: GraphEdgeOut[] = [];
+  let matched: string | null = null;
 
   if (entity) {
-    const result = await graphRecall(sql, [entity], { maxHop: depth });
+    let result = await graphRecall(sql, [entity], { maxHop: depth });
+    matched = entity;
+    if (result.entities.length === 0) {
+      // Fuzzy fallback: substring match on entity names so partial input works.
+      const matches = await sql<{ name: string }[]>`
+        SELECT name FROM graphatlas.entities
+        WHERE name ILIKE ${`%${entity}%`}
+        ORDER BY name LIMIT 5
+      `;
+      if (matches.length > 0) {
+        matched = matches.map((m) => m.name).join(" | ");
+        result = await graphRecall(
+          sql,
+          matches.map((m) => m.name),
+          { maxHop: depth },
+        );
+      }
+    }
     if (result.entities.length === 0) {
       return c.json({ error: "entity not found" }, 404);
     }
@@ -55,5 +73,5 @@ graphRouter.get("/graph", async (c) => {
     }));
   }
 
-  return c.json({ entity: entity || null, depth, nodes, edges });
+  return c.json({ entity: entity || null, matched, depth, nodes, edges });
 });
