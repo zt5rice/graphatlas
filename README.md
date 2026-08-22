@@ -113,8 +113,10 @@ Run: `bun benchmark --mode <mode> --limit 50` — full details in
 
 ## Demo video
 
-<!-- TODO: add docs/demo.mp4 (5–8 min: upload → graph explorer → hybrid Q&A with
-     evidence → benchmark dashboard) and link it here. -->
+<!-- TODO: replace with the final file/URL once recorded (see docs/DEMO_SCRIPT.md). -->
+
+🎬 **docs/demo.mp4** — 5–8 min walkthrough: upload → graph explorer → hybrid Q&A with
+evidence → benchmark dashboard. (Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md))
 
 ## Honesty policy
 
