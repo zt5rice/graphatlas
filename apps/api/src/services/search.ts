@@ -18,7 +18,11 @@ export type SearchInput = {
   topK: number;
   minScore?: number;
   documentIds?: string[];
+  /** Ablation control: restrict which recall paths run (benchmark). */
+  paths?: RecallPath[];
 };
+
+export type RecallPath = "keyword" | "vector" | "graph";
 
 export type SearchResponse = {
   query: string;
@@ -71,26 +75,41 @@ export async function searchDocuments(input: SearchInput): Promise<SearchRespons
   const query = input.query.trim();
   const topK = input.topK;
   const documentIds = input.documentIds ?? [];
+  const paths = input.paths ?? (["keyword", "vector", "graph"] as RecallPath[]);
+  const want = (path: RecallPath) => paths.includes(path);
 
   const modeDecision =
     input.mode && MODES.includes(input.mode)
       ? { mode: input.mode, source: "request" as const }
       : await resolveMode(query);
 
-  const keywordCandidates = await keywordRecall(sql, query, { limit: topK, documentIds });
+  const keywordCandidates = want("keyword")
+    ? await keywordRecall(sql, query, { limit: topK, documentIds })
+    : [];
 
-  const vectorResult = await vectorRecall(sql, searchDeps.embed ?? defaultEmbed, query, {
-    limit: topK,
-    model: process.env.EMBEDDING_MODEL ?? "text-embedding-3-small",
-    dim: Number(process.env.EMBEDDING_DIMENSIONS ?? 1536),
-    documentIds,
-  });
+  const vectorResult = want("vector")
+    ? await vectorRecall(sql, searchDeps.embed ?? defaultEmbed, query, {
+        limit: topK,
+        model: process.env.EMBEDDING_MODEL ?? "text-embedding-3-small",
+        dim: Number(process.env.EMBEDDING_DIMENSIONS ?? 1536),
+        documentIds,
+      })
+    : { chunks: [], entities: [], relations: [] };
 
-  const seeds = vectorResult.entities
-    .slice(0, 5)
-    .map((e) => e.name)
-    .filter((name) => name.length > 0);
-  const graphResult = await graphRecall(sql, seeds, { maxHop: 2 });
+  const mentionRows = await sql<{ name: string }[]>`
+    SELECT name FROM graphatlas.entities
+    WHERE ${query} ILIKE '%' || name || '%'
+    LIMIT 10
+  `;
+  const mentionSeeds = mentionRows.map((r) => r.name);
+  const vectorSeeds = want("vector") ? vectorResult.entities.slice(0, 5).map((e) => e.name) : [];
+  const uniqueSeeds = Array.from(
+    new Set([...mentionSeeds, ...vectorSeeds].filter((name) => name.length > 0)),
+  );
+
+  const graphResult = want("graph")
+    ? await graphRecall(sql, uniqueSeeds, { maxHop: 2 })
+    : { seeds: [], entities: [], relations: [], chunkIds: [] };
 
   const graphChunkRows =
     graphResult.chunkIds.length > 0
