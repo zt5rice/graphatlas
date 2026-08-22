@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { chatStream } from "../services/api";
 
 type Message = { id: string; role: "user" | "assistant"; text: string };
@@ -102,7 +104,7 @@ export default function ChatPage() {
         </button>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-4">
         {messages.length === 0 && (
           <p className="text-slate-500 text-sm">
             Ask about the knowledge base, e.g. "Who does Ethan Brooks report to?"
@@ -110,15 +112,15 @@ export default function ChatPage() {
         )}
         {messages.map((m) => (
           <div key={m.id} className={m.role === "user" ? "text-right" : "text-left"}>
-            <span
-              className={
-                m.role === "user"
-                  ? "inline-block rounded-lg bg-sky-600 px-3 py-2 text-sm text-white"
-                  : "inline-block rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-100 whitespace-pre-wrap"
-              }
-            >
-              {m.text}
-            </span>
+            {m.role === "user" ? (
+              <span className="inline-block rounded-lg bg-sky-600 px-3 py-2 text-sm text-white whitespace-pre-wrap">
+                {m.text}
+              </span>
+            ) : (
+              <div className="chat-markdown inline-block max-w-full rounded-lg bg-slate-800 px-3 py-2 text-left text-sm text-slate-100">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.text}</ReactMarkdown>
+              </div>
+            )}
           </div>
         ))}
         {busy && <p className="text-slate-500 text-sm">thinking…</p>}
@@ -126,7 +128,7 @@ export default function ChatPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded border border-slate-800 bg-slate-900 p-3">
+        <div className="max-h-40 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-3">
           <h3 className="mb-2 text-sm font-semibold text-slate-300">Tool trace</h3>
           {toolCalls.length === 0 && <p className="text-xs text-slate-500">No tool calls yet.</p>}
           <ol className="space-y-1 text-xs text-slate-400">
@@ -139,7 +141,7 @@ export default function ChatPage() {
           </ol>
         </div>
 
-        <div className="rounded border border-slate-800 bg-slate-900 p-3">
+        <div className="max-h-40 overflow-y-auto rounded border border-slate-800 bg-slate-900 p-3">
           <h3 className="mb-2 text-sm font-semibold text-slate-300">Evidence</h3>
           {evidence.length === 0 && <p className="text-xs text-slate-500">No evidence yet.</p>}
           <div className="space-y-2">

@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.chat-markdown p {
+  margin: 0 0 0.5rem;
+}
+.chat-markdown p:last-child {
+  margin-bottom: 0;
+}
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+.chat-markdown ul {
+  list-style: disc;
+}
+.chat-markdown ol {
+  list-style: decimal;
+}
+.chat-markdown li {
+  margin: 0.15rem 0;
+}
+.chat-markdown strong {
+  font-weight: 600;
+}
+.chat-markdown code {
+  background: rgb(51 65 85);
+  border-radius: 4px;
+  padding: 0 0.25rem;
+  font-size: 0.85em;
+}

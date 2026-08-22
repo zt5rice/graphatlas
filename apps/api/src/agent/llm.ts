@@ -1,4 +1,5 @@
 import type { LlmMessage, LlmResponse, ToolDef } from "./types";
+import { extractDsmlToolCalls } from "./dsml";
 
 export const agentDeps: {
   llm?: (messages: LlmMessage[], tools: ToolDef[]) => Promise<LlmResponse>;
@@ -50,7 +51,7 @@ export async function defaultLlm(messages: LlmMessage[], tools: ToolDef[]): Prom
     }[];
   };
   const message = data.choices?.[0]?.message;
-  return {
+  const response: LlmResponse = {
     content: message?.content ?? null,
     tool_calls: (message?.tool_calls ?? []).map((tc) => ({
       id: tc.id,
@@ -58,6 +59,14 @@ export async function defaultLlm(messages: LlmMessage[], tools: ToolDef[]): Prom
       arguments: tc.function.arguments,
     })),
   };
+  if (response.tool_calls.length === 0 && response.content) {
+    const dsml = extractDsmlToolCalls(response.content);
+    if (dsml.toolCalls.length > 0) {
+      response.tool_calls = dsml.toolCalls;
+      response.content = dsml.cleaned || null;
+    }
+  }
+  return response;
 }
 
 /**
@@ -131,8 +140,16 @@ export async function defaultStreamingLlm(
     }
   }
 
-  return {
+  const response: LlmResponse = {
     content: content.length > 0 ? content : null,
     tool_calls: toolCalls.filter((tc) => tc.name),
   };
+  if (response.tool_calls.length === 0 && response.content) {
+    const dsml = extractDsmlToolCalls(response.content);
+    if (dsml.toolCalls.length > 0) {
+      response.tool_calls = dsml.toolCalls;
+      response.content = dsml.cleaned || null;
+    }
+  }
+  return response;
 }

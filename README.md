@@ -113,10 +113,21 @@ Run: `bun benchmark --mode <mode> --limit 50` — full details in
 
 ## Demo video
 
-<!-- TODO: replace with the final file/URL once recorded (see docs/DEMO_SCRIPT.md). -->
+Four-part walkthrough (recorded 2026-08-22). QuickTime `.mov` — GitHub does not
+inline-play `.mov`, so download to view, or open them locally.
 
-🎬 **docs/demo.mp4** — 5–8 min walkthrough: upload → graph explorer → hybrid Q&A with
-evidence → benchmark dashboard. (Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md))
+| Part | File |
+|---|---|
+| 1 | [graphatlas-demo01.mov](./docs/demos/graphatlas-demo01.mov) |
+| 2 | [graphatlas-demo02.mov](./docs/demos/graphatlas-demo02.mov) |
+| 3 | [graphatlas-demo03.mov](./docs/demos/graphatlas-demo03.mov) |
+| 4 | [graphatlas-demo04.mov](./docs/demos/graphatlas-demo04.mov) |
+
+Covers: ingest → graph explorer → multi-engine QA with evidence → benchmark summary.
+Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md).
+
+> Tip: for a single link that plays anywhere (GitHub/README/resume), upload the four
+> parts to YouTube and I can swap these links for the playlist URL.
 
 ## Honesty policy
 
