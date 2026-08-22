@@ -101,7 +101,7 @@ graphatlas/
 ├── benchmark/          run.ts + judge.ts + results/
 ├── tests/              unit/ integration/ e2e/
 ├── scripts/            setup.sh、demo.sh、e2e.sh
-├── docs/               ARCHITECTURE.md、API.md、BENCHMARK.md、SOURCES.md、EMBEDDING.md
+├── docs/               ARCHITECTURE.md、API.md、BENCHMARK.md、EMBEDDING.md
 ├── docker-compose.yml  postgres:17 + pgvector
 └── .env.example
 ```
@@ -253,7 +253,7 @@ eval_runs(id text pk, mode text, started_at timestamptz, finished_at timestamptz
 | **2** | 抽取器包（lightrag-hku `ainsert` staging → ETL 到运行期 schema，embedding + tsvector 回填）。fixture 集成测试。定稿语料 + golden set。锁定 LightRAG staging 表名。 | 抽取器 CLI 摄取整个语料；集成测试断言计数/对齐；golden set 定稿（50） |
 | **3** | 在 `packages/core` 实现检索引擎：关键词/向量/图召回 + RRF + mode router + diagnostics；`/search` 接口。单元 + 集成测试。Benchmark runner v1（指标、JSON 输出）。 | `/search` 返回带 `match_types` + `diagnostics` 的证据；bench runner 产出合法 JSON |
 | **4** | Agent 循环 + SSE `/chat`（带工具与引用要求）。前端：上传/任务、图谱浏览器（React Flow）、带证据的问答、评测看板。E2E 脚本。 | 聊天流式返回并引用 chunk；e2e 场景 A–C 通过 |
-| **5** | 跑 benchmark（4 模式 × 50 题，LLM-judge），把真实数字填入 `README.md` + `docs/BENCHMARK.md`（只有跑挂时才用占位符）。打磨 README（mermaid 架构、快速开始、演示视频位、技术词→代码映射）、`docs/API.md`、`docs/SOURCES.md`。录 5–8 分钟演示视频。最终全量测试通过，推 GitHub，打 `v1.0` tag。 | README 数字全部可溯源 `benchmark/results/*.json`；测试全绿；仓库公开 |
+| **5** | 跑 benchmark（4 模式 × 50 题，LLM-judge），把真实数字填入 `README.md` + `docs/BENCHMARK.md`（只有跑挂时才用占位符）。打磨 README（mermaid 架构、快速开始、演示视频位、技术词→代码映射）、`docs/API.md`。录 5–8 分钟演示视频。最终全量测试通过，推 GitHub，打 `v1.0` tag。 | README 数字全部可溯源 `benchmark/results/*.json`；测试全绿；仓库公开 |
 
 应急预案：Day 2 若超时，砍掉可选 `pg_trgm`，保留 tsvector+ILIKE；Day 4 若超时，砍掉 facts 模块（P2）——
 P1 范围（摄取 → 建图 → 混合检索 → Agent → 评测 → 前端）不可砍。

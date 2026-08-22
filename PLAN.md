@@ -108,7 +108,7 @@ graphatlas/
 ├── benchmark/          run.ts + judge.ts + results/
 ├── tests/              unit/ integration/ e2e/
 ├── scripts/            setup.sh, demo.sh, e2e.sh
-├── docs/               ARCHITECTURE.md, API.md, BENCHMARK.md, SOURCES.md
+├── docs/               ARCHITECTURE.md, API.md, BENCHMARK.md
 ├── docker-compose.yml  postgres:17 + pgvector
 └── .env.example
 ```
@@ -264,7 +264,7 @@ corpus git hash in each result JSON; human spot-check 10/50 questions.
 | **2** | Extractor package (lightrag-hku `ainsert` staging → ETL to runtime schema, embeddings + tsvector backfill). Integration test on fixtures. Finalize corpus + golden set. Pin LightRAG staging table names. | Extractor CLI ingests the corpus; integration test asserts counts/alignment; golden set final (50) |
 | **3** | Retrieval engine in `packages/core`: keyword/vector/graph recall + RRF + mode router + diagnostics; `/search` endpoint. Unit + integration tests. Benchmark runner v1 (metrics, JSON output). | `/search` returns evidence with `match_types` + `diagnostics`; bench runner produces valid JSON |
 | **4** | Agent loop + SSE `/chat` with tools + citation requirement. Frontend: Upload/Jobs, Graph Explorer (React Flow), QA chat with evidence, Eval dashboard. E2E script. | Chat streams and cites chunks; e2e scenarios A–C pass |
-| **5** | Run benchmark (4 modes × 50 Qs, LLM-judge), fill real numbers into `README.md` + `docs/BENCHMARK.md` (placeholders only if a run fails). Polish README (mermaid architecture, quick start, demo-video slot, tech→code honesty map), `docs/API.md`, `docs/SOURCES.md`. Record 5–8 min demo video. Final full test pass, push to GitHub, tag `v1.0`. | README numbers all trace to `benchmark/results/*.json`; tests green; repo public |
+| **5** | Run benchmark (4 modes × 50 Qs, LLM-judge), fill real numbers into `README.md` + `docs/BENCHMARK.md` (placeholders only if a run fails). Polish README (mermaid architecture, quick start, demo-video slot, tech→code honesty map), `docs/API.md`. Record 5–8 min demo video. Final full test pass, push to GitHub, tag `v1.0`. | README numbers all trace to `benchmark/results/*.json`; tests green; repo public |
 
 Contingency: if Day 2 slips, drop optional `pg_trgm` and keep tsvector+ILIKE; if Day 4 slips,
 drop facts module (P2) — the P1 scope (ingest → graph → hybrid retrieval → agent → eval →

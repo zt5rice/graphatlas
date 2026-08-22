@@ -2,8 +2,7 @@
 
 > Status: **functional end-to-end** (ingest → graph build → multi-engine retrieval →
 > agent Q&A → benchmark). Plans: [PLAN.md](./PLAN.md) · [中文版](./PLAN-cn.md) ·
-> API: [docs/API.md](./docs/API.md) · Benchmark: [docs/BENCHMARK.md](./docs/BENCHMARK.md) ·
-> Provenance: [docs/SOURCES.md](./docs/SOURCES.md)
+> API: [docs/API.md](./docs/API.md) · Benchmark: [docs/BENCHMARK.md](./docs/BENCHMARK.md)
 
 GraphAtlas ingests organizational documents (org chart, teams, projects, customers,
 runbooks), builds a knowledge graph via LLM entity/relation extraction (LightRAG), and
@@ -91,7 +90,7 @@ extractor/       Python 3.11 + lightrag-hku graph extraction sidecar
 data/            English corpus (Aurora Dynamics) + 50-question golden set
 benchmark/       evaluation runner + measured results JSON
 tests/           Playwright e2e (upload→graph, chat→citation)
-docs/            API.md, BENCHMARK.md, SOURCES.md, LINEAR_PLAN.md
+docs/            API.md, BENCHMARK.md, LINEAR_PLAN.md
 ```
 
 ## Measured results (2026-08-22, 50-question golden set)
@@ -133,8 +132,7 @@ Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md).
 
 - Every number on the README/resume is measured by this repo's own benchmark and
   traces to `benchmark/results/*.json` — no preset figures.
-- Technical claims map 1:1 to code (see the honesty map above) and to the course
-  materials/industry sources listed in [docs/SOURCES.md](./docs/SOURCES.md).
+- Technical claims map 1:1 to code (see the honesty map above).
 
 ## License
 
