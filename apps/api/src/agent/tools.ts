@@ -67,16 +67,16 @@ export async function executeTool(name: string, args: Record<string, string>) {
         topK: 5,
       });
       return {
-        results: response.results.map((r) => ({
+        results: response.results.slice(0, 3).map((r) => ({
           chunk_id: r.chunk_id,
           document_id: r.document_id,
-          snippet: r.snippet,
+          snippet: r.snippet.slice(0, 160),
           score: r.score,
           match_types: r.match_types,
         })),
         evidence: {
-          entities: response.evidence.entities.map((e) => e.name),
-          relations: response.evidence.relations.map((r) => `${r.src} -> ${r.tgt}`),
+          entities: response.evidence.entities.slice(0, 5).map((e) => e.name),
+          relations: response.evidence.relations.slice(0, 5).map((r) => `${r.src} -> ${r.tgt}`),
         },
       };
     }
@@ -104,7 +104,7 @@ export async function executeTool(name: string, args: Record<string, string>) {
         id: doc.id,
         title: doc.title,
         status: doc.status,
-        chunks: chunks.map((c) => ({ chunk_id: c.id, text: c.text })),
+        chunks: chunks.slice(0, 3).map((c) => ({ chunk_id: c.id, text: c.text.slice(0, 200) })),
       };
     }
     case "lookup_entity": {

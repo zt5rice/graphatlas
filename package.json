@@ -19,10 +19,12 @@
     "test:integration": "bun test packages/db/test apps/api/test",
     "test:web": "bun --cwd apps/web test",
     "benchmark": "bun --env-file=.env benchmark/run.ts",
+    "e2e": "bash scripts/e2e.sh",
     "db:init": "bun --env-file=../../.env run --cwd packages/db migrate && bun --env-file=../../.env run --cwd packages/db verify",
     "build:web": "bun --cwd apps/web build"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "typescript": "^5.6.0"
   }
 }
