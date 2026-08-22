@@ -5,6 +5,7 @@ import { compactQuery, snippet } from "./snippet";
 export type KeywordRecallOptions = {
   limit: number;
   candidateLimit?: number;
+  documentIds?: string[];
 };
 
 type KeywordRow = {
@@ -30,6 +31,7 @@ export async function keywordRecall(
   opts: KeywordRecallOptions,
 ): Promise<RecallCandidate[]> {
   const candidateLimit = opts.candidateLimit ?? Math.max(opts.limit * 5, 50);
+  const documentIds = opts.documentIds ?? [];
   const candidates = new Map<string, RecallCandidate>();
 
   const add = (type: string, rows: KeywordRow[]) => {
@@ -64,7 +66,9 @@ export async function keywordRecall(
     FROM graphatlas.chunks c
     JOIN graphatlas.documents d ON d.id = c.document_id
     CROSS JOIN keyword_query
-    WHERE d.status = 'ready' AND c.text_search @@ keyword_query.tsq
+    WHERE d.status = 'ready'
+      AND c.text_search @@ keyword_query.tsq
+      AND (${documentIds.length} = 0 OR c.document_id = ANY(${documentIds}))
     ORDER BY score DESC, c.created_at DESC
     LIMIT ${candidateLimit}
   `;
@@ -82,6 +86,7 @@ export async function keywordRecall(
     JOIN graphatlas.documents d ON d.id = c.document_id
     WHERE d.status = 'ready'
       AND (c.text ILIKE ${phrasePattern} ESCAPE '\\' OR c.text ILIKE ${compactPattern} ESCAPE '\\')
+      AND (${documentIds.length} = 0 OR c.document_id = ANY(${documentIds}))
     ORDER BY score DESC, c.created_at DESC
     LIMIT ${candidateLimit}
   `;

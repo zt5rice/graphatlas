@@ -7,6 +7,7 @@ export type VectorRecallOptions = {
   candidateLimit?: number;
   model: string;
   dim: number;
+  documentIds?: string[];
 };
 
 export type QueryEmbedder = (text: string) => Promise<number[]>;
@@ -32,6 +33,7 @@ export async function vectorRecall(
   const candidateLimit = opts.candidateLimit ?? Math.max(opts.limit * 3, 30);
   const model = opts.model;
   const dim = opts.dim;
+  const documentIds = opts.documentIds ?? [];
 
   const chunkRows = await sql<{ chunk_id: string; document_id: string; text: string; dist: number }[]>`
     SELECT c.id AS chunk_id, c.document_id, c.text,
@@ -41,6 +43,7 @@ export async function vectorRecall(
     WHERE d.status = 'ready'
       AND c.embedding_model = ${model}
       AND c.embedding_dim = ${dim}
+      AND (${documentIds.length} = 0 OR c.document_id = ANY(${documentIds}))
     ORDER BY c.embedding <=> ${vec}::vector ASC, c.created_at DESC
     LIMIT ${candidateLimit}
   `;
