@@ -1,4 +1,6 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { chatStream } from "../services/api";
 
 type Message = { id: string; role: "user" | "assistant"; text: string };
@@ -110,15 +112,15 @@ export default function ChatPage() {
         )}
         {messages.map((m) => (
           <div key={m.id} className={m.role === "user" ? "text-right" : "text-left"}>
-            <span
-              className={
-                m.role === "user"
-                  ? "inline-block rounded-lg bg-sky-600 px-3 py-2 text-sm text-white"
-                  : "inline-block rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-100 whitespace-pre-wrap"
-              }
-            >
-              {m.text}
-            </span>
+            {m.role === "user" ? (
+              <span className="inline-block rounded-lg bg-sky-600 px-3 py-2 text-sm text-white whitespace-pre-wrap">
+                {m.text}
+              </span>
+            ) : (
+              <div className="chat-markdown inline-block max-w-full rounded-lg bg-slate-800 px-3 py-2 text-left text-sm text-slate-100">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.text}</ReactMarkdown>
+              </div>
+            )}
           </div>
         ))}
         {busy && <p className="text-slate-500 text-sm">thinking…</p>}
