@@ -19,7 +19,7 @@ const TYPE_COLORS: Record<string, string> = {
 export function graphToFlow(data: GraphResponse): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = data.nodes.map((n, i) => ({
     id: n.id,
-    position: { x: (i % 5) * 320, y: Math.floor(i / 5) * 240 },
+    position: { x: (i % 4) * 420, y: Math.floor(i / 4) * 320 },
     data: { label: n.label },
     style: {
       background: TYPE_COLORS[n.type?.toUpperCase()] ?? TYPE_COLORS.UNKNOWN,
@@ -29,19 +29,23 @@ export function graphToFlow(data: GraphResponse): { nodes: Node[]; edges: Edge[]
       padding: "6px 12px",
     },
   }));
-  const edges: Edge[] = data.edges.map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    label: e.label,
-    style: {
-      strokeWidth: Math.max(1, Math.min(4, (e.weight ?? 1) * 2)),
-      stroke: "#64748b",
-    },
-    labelStyle: { fill: "#cbd5e1", fontSize: 11, fontWeight: 500 },
-    labelBgStyle: { fill: "#0f172a", fillOpacity: 0.9, stroke: "#475569", strokeWidth: 1 },
-    labelBgPadding: [6, 3] as [number, number],
-    labelBgBorderRadius: 6,
-  }));
+  const edges: Edge[] = data.edges.map((e) => {
+    // Show only the first keyword, capped, so labels stay small.
+    const label = (e.label ?? "").split(",")[0]?.trim().slice(0, 14) || e.label || "";
+    return {
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      label,
+      style: {
+        strokeWidth: Math.max(1, Math.min(4, (e.weight ?? 1) * 2)),
+        stroke: "#64748b",
+      },
+      labelStyle: { fill: "#cbd5e1", fontSize: 10, fontWeight: 500 },
+      labelBgStyle: { fill: "#0f172a", fillOpacity: 0.95, stroke: "#475569", strokeWidth: 1 },
+      labelBgPadding: [4, 2] as [number, number],
+      labelBgBorderRadius: 5,
+    };
+  });
   return { nodes, edges };
 }
