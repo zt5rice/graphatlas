@@ -91,7 +91,7 @@ extractor/       Python 3.11 + lightrag-hku graph extraction sidecar
 data/            English corpus (Aurora Dynamics) + 50-question golden set
 benchmark/       evaluation runner + measured results JSON
 tests/           Playwright e2e (upload→graph, chat→citation)
-docs/            API.md, BENCHMARK.md, SOURCES.md, LINEAR_PLAN.md
+docs/            API.md, BENCHMARK.md, LINEAR_PLAN.md
 ```
 
 ## Measured results (2026-08-22, 50-question golden set)
