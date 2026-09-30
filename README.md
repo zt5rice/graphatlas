@@ -14,7 +14,12 @@ React graph explorer.
 
 ## Features
 
-- **Ingestion pipeline** — upload md/txt/csv → LightRAG extraction (chunk → LLM
+- **Ingestion pipeline** — upload **PDF / Word / XML / JSON / markdown / CSV**. A local parser
+  (`extractor/src/orgrag_extract/parsers.py`) normalizes every format to markdown and records a
+  per-section **source span** so any retrieved chunk can be traced back to its position in the
+  original document. Scanned PDFs are flagged for OCR rather than indexed empty, and parse
+  failures are rejected instead of half-indexed. **No managed parsing API and no extra
+  credentials** — pdfplumber, python-docx and lxml run in the same container → LightRAG extraction (chunk → LLM
   entity/relation extraction → gleaning → merge) → ETL into a runtime PostgreSQL schema
   with per-stage timing and failure capture.
 - **Multi-engine retrieval** — keyword (`tsvector` + ILIKE), dense vector (pgvector

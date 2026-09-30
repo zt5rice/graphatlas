@@ -11,6 +11,10 @@ const KIND_BY_EXT: Record<string, DocumentKind> = {
   markdown: "md",
   txt: "txt",
   csv: "csv",
+  pdf: "pdf",
+  docx: "docx",
+  xml: "xml",
+  json: "json",
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -27,7 +31,8 @@ documentsRouter.post("/", requireWriteAuth, async (c) => {
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   const kind = KIND_BY_EXT[ext];
   if (!kind) {
-    return c.json({ error: `unsupported file type '.${ext}' (allowed: md, txt, csv)` }, 400);
+    const allowed = Object.keys(KIND_BY_EXT).join(", ");
+    return c.json({ error: `unsupported file type '.${ext}' (allowed: ${allowed})` }, 400);
   }
 
   const title = String(form.get("title") ?? "").trim() || file.name;

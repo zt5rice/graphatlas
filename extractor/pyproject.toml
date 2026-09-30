@@ -9,8 +9,18 @@ dependencies = [
   "openai>=1.0.0",
 ]
 
+[project.optional-dependencies]
+# Local document parsers. Deliberately no managed API: the previous integration
+# depended on a vendor endpoint that could not be provisioned outside China.
+parsers = [
+  "pdfplumber>=0.11",
+  "python-docx>=1.1",
+  "lxml>=5.0",
+]
+
 [project.scripts]
 orgrag-extract = "orgrag_extract.cli:main"
+orgrag-parse = "orgrag_extract.parsers:main"
 
 [dependency-groups]
 dev = ["pytest>=8.0"]
