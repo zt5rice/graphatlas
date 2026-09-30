@@ -8,7 +8,7 @@ export type HealthResponse = {
   time: string;
 };
 
-export type DocumentKind = "md" | "txt" | "csv";
+export type DocumentKind = "md" | "txt" | "csv" | "pdf" | "docx" | "xml" | "json";
 export type DocumentStatus = "uploaded" | "processing" | "ready" | "failed";
 export type JobStatus = "queued" | "running" | "ready" | "failed";
 
