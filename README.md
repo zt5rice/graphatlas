@@ -133,8 +133,8 @@ Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md).
 
 - Every number on the README/resume is measured by this repo's own benchmark and
   traces to `benchmark/results/*.json` — no preset figures.
-- Technical claims map 1:1 to code (see the honesty map above) and to the course
-  materials/industry sources listed in [docs/SOURCES.md](./docs/SOURCES.md).
+- Technical claims map 1:1 to code (see the honesty map above) and to the
+  architectural influences and public sources listed in [docs/SOURCES.md](./docs/SOURCES.md).
 
 ## License
 
