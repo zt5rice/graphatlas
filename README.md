@@ -2,7 +2,8 @@
 
 > Status: **functional end-to-end** (ingest → graph build → multi-engine retrieval →
 > agent Q&A → benchmark). Plans: [PLAN.md](./PLAN.md) · [中文版](./PLAN-cn.md) ·
-> API: [docs/API.md](./docs/API.md) · Benchmark: [docs/BENCHMARK.md](./docs/BENCHMARK.md)
+> API: [docs/API.md](./docs/API.md) · Benchmark: [docs/BENCHMARK.md](./docs/BENCHMARK.md) ·
+> Provenance: [docs/SOURCES.md](./docs/SOURCES.md)
 
 GraphAtlas ingests organizational documents (org chart, teams, projects, customers,
 runbooks), builds a knowledge graph via LLM entity/relation extraction (LightRAG), and
@@ -132,7 +133,8 @@ Recording script: [docs/DEMO_SCRIPT.md](./docs/DEMO_SCRIPT.md).
 
 - Every number on the README/resume is measured by this repo's own benchmark and
   traces to `benchmark/results/*.json` — no preset figures.
-- Technical claims map 1:1 to code (see the honesty map above).
+- Technical claims map 1:1 to code (see the honesty map above) and to the
+  architectural influences and public sources listed in [docs/SOURCES.md](./docs/SOURCES.md).
 
 ## License
 
