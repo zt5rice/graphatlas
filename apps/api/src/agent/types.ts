@@ -1,3 +1,7 @@
+// Tool definitions now live in @graphatlas/tools (shared with the MCP server);
+// re-exported here so existing "./types" import sites keep working unchanged.
+export { TOOL_NAMES, type ToolDef, type ToolName } from "@graphatlas/tools";
+
 export type LlmToolCall = {
   id: string;
   name: string;
@@ -14,19 +18,6 @@ export type LlmMessage = {
   content: string;
   tool_call_id?: string;
   tool_calls?: { id: string; type: "function"; function: { name: string; arguments: string } }[];
-};
-
-export type ToolDef = {
-  type: "function";
-  function: {
-    name: string;
-    description: string;
-    parameters: {
-      type: "object";
-      properties: Record<string, unknown>;
-      required?: string[];
-    };
-  };
 };
 
 export type AgentTraceEntry = {

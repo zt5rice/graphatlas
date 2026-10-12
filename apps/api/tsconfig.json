@@ -6,7 +6,8 @@
     "paths": {
       "@graphatlas/db": ["../../packages/db/src/index.ts"],
       "@graphatlas/core": ["../../packages/core/src/index.ts"],
-      "@graphatlas/contracts": ["../../packages/contracts/src/index.ts"]
+      "@graphatlas/contracts": ["../../packages/contracts/src/index.ts"],
+      "@graphatlas/tools": ["../../packages/tools/src/index.ts"]
     }
   },
   "include": ["src"]

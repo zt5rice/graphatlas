@@ -10,6 +10,10 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@graphatlas/contracts": "workspace:*",
+    "@graphatlas/core": "workspace:*",
+    "@graphatlas/db": "workspace:*",
+    "@graphatlas/tools": "workspace:*",
     "hono": "^4.6.0"
   },
   "devDependencies": {
