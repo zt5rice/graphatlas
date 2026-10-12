@@ -13,6 +13,10 @@
       "name": "@graphatlas/api",
       "version": "0.1.0",
       "dependencies": {
+        "@graphatlas/contracts": "workspace:*",
+        "@graphatlas/core": "workspace:*",
+        "@graphatlas/db": "workspace:*",
+        "@graphatlas/tools": "workspace:*",
         "hono": "^4.6.0",
       },
       "devDependencies": {
@@ -71,6 +75,18 @@
       },
       "devDependencies": {
         "@graphatlas/core": "workspace:*",
+        "@types/bun": "^1.1.0",
+        "typescript": "^5.6.0",
+      },
+    },
+    "packages/tools": {
+      "name": "@graphatlas/tools",
+      "version": "0.1.0",
+      "dependencies": {
+        "@graphatlas/core": "workspace:*",
+        "@graphatlas/db": "workspace:*",
+      },
+      "devDependencies": {
         "@types/bun": "^1.1.0",
         "typescript": "^5.6.0",
       },
@@ -190,6 +206,8 @@
     "@graphatlas/core": ["@graphatlas/core@workspace:packages/core"],
 
     "@graphatlas/db": ["@graphatlas/db@workspace:packages/db"],
+
+    "@graphatlas/tools": ["@graphatlas/tools@workspace:packages/tools"],
 
     "@graphatlas/web": ["@graphatlas/web@workspace:apps/web"],
 
