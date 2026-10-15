@@ -20,7 +20,7 @@
 | ID | Decision | Rationale |
 |---|---|---|
 | D1 | **Single source of truth for tools** — extract `packages/tools`; both the HTTP agent and the MCP server import from it | Copying `tools.ts` for MCP would inevitably drift; a parity test alone is a weaker guarantee than one shared module |
-| D2 | **Separate `apps/mcp` workspace** — not a folder inside `apps/api` | The stdio server must be independently startable; story = "one core, two entry points" (same idea as `ff-companybrain` modules) |
+| D2 | **Separate `apps/mcp` workspace** — not a folder inside `apps/api` | The stdio server must be independently startable; story = "one core, two entry points" — retrieval lives in `packages/*`; the HTTP API and the MCP server are thin transports over it |
 | D3 | **Transport: stdio first, HTTP optional** | stdio covers the mainstream Claude Code / Claude Desktop / Codex usage with zero auth complexity; HTTP is only needed for remote/multi-client |
 | D4 | **Schema strategy: zod is the single source**; derive OpenAI JSON Schema. Fallback: hand-written JSON Schema + parity test | Defaults to less duplication; the fallback exists because DeepSeek/OpenCode gateways sometimes reject derived schemas (`$schema`, `anyOf`) |
 | D5 | **Agent over MCP behind a feature flag** — `AGENT_TOOLS_SOURCE=local\|mcp`, default `local` | Guarantees zero regression on the existing chat path and on CI; the switch is a separate ticket |
@@ -101,7 +101,7 @@ Execution order: **01 → 02 → 03 → {04, 05, 06} → {07, 08, 09, 11} → {1
 
 ### MCP-04 — Integration tests + parity (ZHA-175)
 
-- **Scope:** `test/server.test.ts` (Client + `InMemoryTransport.createLinkedPair()`, seeded fixture, `afterAll` cleanup), `test/parity.test.ts` (MCP tool names/required fields == agent `TOOLS`), `test/stdio-smoke.test.ts` (spawn the real process, capture stderr, enforce timeout, assert child exited — model on `assertChildExited` in `ff-companybrain/deploy/compose/verify-external-mcp.ts`).
+- **Scope:** `test/server.test.ts` (Client + `InMemoryTransport.createLinkedPair()`, seeded fixture, `afterAll` cleanup), `test/parity.test.ts` (MCP tool names/required fields == agent `TOOLS`), `test/stdio-smoke.test.ts` (spawn the real process, capture stderr, enforce timeout, assert the child actually exited — wait for the `exit` event / poll `exitCode` and `kill()` as a backstop, so a hung server fails the test instead of hanging CI).
 - **Acceptance:** `bun test` covers and passes them; adding a stray `console.log` to `server.ts` makes the stdio smoke fail; CI executes them (no silent skip).
 - **Branch:** `test/ZHA-175-mcp-integration-tests`
 
